@@ -13,7 +13,7 @@ async function handleGoogleCredential(response) {
   loading.value = true
   try {
     await loginWithGoogle(response.credential)
-    const redirect = route.query.redirect || '/categories'
+    const redirect = route.query.redirect || '/dashboard'
     router.push(redirect)
   } catch (err) {
     error.value = err?.data?.error || err?.message || 'Google sign-in failed'
