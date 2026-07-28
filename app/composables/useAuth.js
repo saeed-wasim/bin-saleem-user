@@ -43,6 +43,16 @@ export function useAuth() {
     }
   }
 
+  // Clears a stale/invalid token and sends the customer back to login so a
+  // fresh one is issued, instead of leaving them stuck on repeated 401s.
+  async function sessionExpired(redirectPath) {
+    logout()
+    if (import.meta.client) {
+      const path = redirectPath || useRoute().fullPath
+      await navigateTo(`/login?redirect=${encodeURIComponent(path)}&reason=session`)
+    }
+  }
+
   return {
     token,
     user,
@@ -50,5 +60,6 @@ export function useAuth() {
     loadFromStorage,
     loginWithGoogle,
     logout,
+    sessionExpired,
   }
 }

@@ -49,6 +49,9 @@ onMounted(() => {
     <div class="w-full max-w-sm bg-white rounded-lg shadow p-8">
       <h1 class="text-2xl font-bold text-gray-800 mb-6 text-center">Sign In</h1>
 
+      <p v-if="route.query.reason === 'session'" class="text-sm text-gray-500 text-center mb-4">
+        Your session expired — please sign in again.
+      </p>
       <p v-if="loading" class="text-sm text-gray-500 text-center mb-4">Signing you in...</p>
       <p v-if="error" class="text-sm text-red-600 text-center mb-4">{{ error }}</p>
 

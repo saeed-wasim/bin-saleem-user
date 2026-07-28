@@ -1,7 +1,9 @@
 <script setup>
+const PAGE_SIZE = 20
+
 const route = useRoute()
 const { categories, loading: categoriesLoading, error: categoriesError, fetchCategories } = useCategories()
-const { products, loading: productsLoading, error: productsError, fetchProducts } = useProducts()
+const { products, loading: productsLoading, error: productsError, pagination, fetchProducts } = useProducts()
 
 const categoryId = computed(() => route.query.categoryId ? Number(route.query.categoryId) : null)
 
@@ -9,15 +11,30 @@ const activeCategory = computed(() =>
   categories.value.find((c) => c.id === categoryId.value)
 )
 
-const filteredProducts = computed(() =>
-  categoryId.value
-    ? products.value.filter((p) => p.categoryId === categoryId.value || p.category?.id === categoryId.value)
-    : products.value
-)
+const hasMore = computed(() => !!pagination.value && pagination.value.page < pagination.value.totalPages)
+const loadingMore = ref(false)
+
+function loadFirstPage() {
+  fetchProducts({ categoryId: categoryId.value, page: 1, limit: PAGE_SIZE })
+}
+
+async function loadMore() {
+  if (!pagination.value || loadingMore.value) return
+  loadingMore.value = true
+  try {
+    await fetchProducts({ categoryId: categoryId.value, page: pagination.value.page + 1, limit: PAGE_SIZE, append: true })
+  } finally {
+    loadingMore.value = false
+  }
+}
 
 onMounted(() => {
   fetchCategories()
-  fetchProducts()
+  if (categoryId.value) loadFirstPage()
+})
+
+watch(categoryId, (value) => {
+  if (value) loadFirstPage()
 })
 </script>
 
@@ -26,13 +43,28 @@ onMounted(() => {
     <div v-if="categoryId">
       <h1 class="text-3xl font-bold mb-6">{{ activeCategory?.name || 'Products' }}</h1>
 
-      <div v-if="productsLoading" class="text-gray-500">Loading products...</div>
+      <div v-if="productsLoading && !products.length" class="text-gray-500">Loading products...</div>
       <div v-else-if="productsError" class="text-red-500">Error loading products: {{ productsError }}</div>
-      <div v-else-if="filteredProducts.length === 0" class="text-gray-500">No products found in this category</div>
+      <div v-else-if="products.length === 0" class="text-gray-500">No products found in this category</div>
 
-      <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <ProductCard v-for="product in filteredProducts" :key="product.id" :product="product" />
-      </div>
+      <template v-else>
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <NuxtLink v-for="product in products" :key="product.id" :to="`/product/${product.id}`">
+            <ProductCard :product="product" />
+          </NuxtLink>
+        </div>
+
+        <div v-if="hasMore" class="mt-8 text-center">
+          <button
+            type="button"
+            class="inline-block border border-theme text-theme hover:bg-theme hover:text-white transition-colors px-6 py-2 font-semibold disabled:opacity-60"
+            :disabled="loadingMore"
+            @click="loadMore"
+          >
+            {{ loadingMore ? 'Loading...' : 'View More' }}
+          </button>
+        </div>
+      </template>
     </div>
 
     <div v-else>

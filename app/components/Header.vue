@@ -1,13 +1,15 @@
 <script setup>
 const searchQuery = ref('')
-const cartCount = ref(0)
-const showLoginDrawer = ref(false)
+const { isOpen: showLoginDrawer, open: openLoginDrawer, close: closeLoginDrawer } = useLoginDrawer()
 
 const { user, isAuthenticated, loadFromStorage } = useAuth()
+const { items: cartItems, loadFromStorage: loadCartFromStorage } = useCart()
 const firstName = computed(() => user.value?.name?.split(' ')[0] || '')
+const cartCount = computed(() => cartItems.value.reduce((n, i) => n + i.qty, 0))
 
 onMounted(() => {
   loadFromStorage()
+  loadCartFromStorage()
 })
 </script>
 
@@ -51,11 +53,11 @@ onMounted(() => {
             Hi, <span class="text-theme font-semibold uppercase">{{ firstName }}</span>
           </NuxtLink>
           <template v-else>
-            <button type="button" class="hidden sm:inline hover:text-theme" @click="showLoginDrawer = true">Login</button>
+            <button type="button" class="hidden sm:inline hover:text-theme" @click="openLoginDrawer">Login</button>
           </template>
 
           <template #fallback>
-            <button type="button" class="hidden sm:inline hover:text-theme" @click="showLoginDrawer = true">Login</button>
+            <button type="button" class="hidden sm:inline hover:text-theme" @click="openLoginDrawer">Login</button>
           </template>
         </ClientOnly>
 
@@ -65,7 +67,7 @@ onMounted(() => {
           </svg>
         </button>
 
-        <NuxtLink to="/login" class="relative hover:text-theme flex items-center gap-1">
+        <NuxtLink to="/bag" class="relative hover:text-theme flex items-center gap-1">
           <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="9" cy="21" r="1" />
             <circle cx="20" cy="21" r="1" />
@@ -79,6 +81,6 @@ onMounted(() => {
       </nav>
     </div>
 
-    <LoginDrawer :show="showLoginDrawer" @close="showLoginDrawer = false" />
+    <LoginDrawer :show="showLoginDrawer" @close="closeLoginDrawer" />
   </header>
 </template>

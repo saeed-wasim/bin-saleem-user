@@ -3,5 +3,8 @@ import Dashboard from "../components/dashboard/Dashboard.vue";
 </script>
 
 <template>
-  <Dashboard />
+  <div>
+    <NoticePopup />
+    <Dashboard />
+  </div>
 </template>
