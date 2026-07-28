@@ -5,7 +5,7 @@ export const useProducts = () => {
   const error = ref(null)
   const pagination = ref(null)
 
-  const fetchProducts = async ({ categoryId, page, limit, append = false } = {}) => {
+  const fetchProducts = async ({ categoryId, search, page, limit, append = false } = {}) => {
     try {
       loading.value = true
       error.value = null
@@ -14,6 +14,7 @@ export const useProducts = () => {
         baseURL: config.public.apiBaseUrl,
         query: {
           ...(categoryId ? { categoryId } : {}),
+          ...(search ? { search } : {}),
           ...(page ? { page } : {}),
           ...(limit ? { limit } : {}),
         },

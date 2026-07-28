@@ -1,13 +1,23 @@
 const CART_KEY = 'bs_cart_items'
 const GST_RATE = 0.03
 
+// Guests share one bucket; each logged-in customer gets their own so a
+// logout/login on the same device shows an empty cart, then their own
+// items again, instead of leaking between accounts.
+function cartStorageKey(customerId) {
+  return customerId ? `${CART_KEY}_${customerId}` : CART_KEY
+}
+
 export function useCart() {
   const items = useState('cart-items', () => [])
   const loaded = useState('cart-loaded', () => false)
+  const customerId = useState('cart-customer-id', () => null)
 
   function loadFromStorage() {
     if (import.meta.client && !loaded.value) {
-      const stored = localStorage.getItem(CART_KEY)
+      const { isAuthenticated, user } = useAuth()
+      customerId.value = isAuthenticated.value ? user.value?.id ?? null : null
+      const stored = localStorage.getItem(cartStorageKey(customerId.value))
       items.value = stored ? JSON.parse(stored) : []
       loaded.value = true
     }
@@ -15,8 +25,35 @@ export function useCart() {
 
   function persist() {
     if (import.meta.client) {
-      localStorage.setItem(CART_KEY, JSON.stringify(items.value))
+      localStorage.setItem(cartStorageKey(customerId.value), JSON.stringify(items.value))
     }
+  }
+
+  // Called right after a successful login: switch to this customer's own
+  // saved cart. If they've never shopped on this device before, keep
+  // whatever they added while browsing as a guest as the start of their cart.
+  function adoptCustomer(id) {
+    if (!import.meta.client) return
+    const wasGuest = customerId.value === null
+    customerId.value = id
+    const stored = localStorage.getItem(cartStorageKey(id))
+    if (stored) {
+      items.value = JSON.parse(stored)
+    } else if (wasGuest) {
+      persist()
+    } else {
+      items.value = []
+      persist()
+    }
+    loaded.value = true
+  }
+
+  // Called on logout: hide the cart immediately without deleting the
+  // customer's saved items, so they reappear the next time they log in.
+  function reset() {
+    items.value = []
+    customerId.value = null
+    loaded.value = true
   }
 
   function addItem(product, { size = null, qty = 1 } = {}) {
@@ -83,6 +120,8 @@ export function useCart() {
     updateSize,
     removeItem,
     clearCart,
+    adoptCustomer,
+    reset,
     subtotal,
     gst,
     shipping,

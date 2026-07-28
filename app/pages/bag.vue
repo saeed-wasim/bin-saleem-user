@@ -1,9 +1,8 @@
 <script setup>
 const { items, subtotal, gst, total, clearCart, loadFromStorage } = useCart()
-const { placeOrder } = useOrders()
+const { createCheckoutSession } = useOrders()
 const { isAuthenticated, loadFromStorage: loadAuthFromStorage } = useAuth()
 const { open: openLoginDrawer } = useLoginDrawer()
-const router = useRouter()
 
 onMounted(() => {
   loadFromStorage()
@@ -20,6 +19,16 @@ const paymentTabRef = ref(null)
 
 function formatPrice(value) {
   return Number(value).toLocaleString('en-IN')
+}
+
+// Jumping straight to Payment via the tab (instead of via "Continue" on the
+// Address step) would otherwise skip confirming an address entirely.
+function goToStep(target) {
+  if (target === 'payment' && !address.value) {
+    step.value = 'address'
+    return
+  }
+  step.value = target
 }
 
 async function handlePlaceOrder() {
@@ -46,16 +55,17 @@ async function handlePlaceOrder() {
   placing.value = true
   try {
     const paymentMethod = paymentTabRef.value?.getPaymentMethod()
-    const order = await placeOrder({
+    const session = await createCheckoutSession({
       items: items.value.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size })),
       address: address.value,
       paymentMethod,
     })
-    await router.push(`/order-confirmation/${order.id}`)
+    // Order is already reserved server-side (status "Pending") at this point,
+    // so the cart can be cleared before the redirect to Stripe.
     clearCart()
+    window.location.href = session.url
   } catch (err) {
-    placeError.value = err.data?.error || err.message || 'Unable to place order'
-  } finally {
+    placeError.value = err.data?.error || err.message || 'Unable to start checkout'
     placing.value = false
   }
 }
@@ -63,6 +73,8 @@ async function handlePlaceOrder() {
 
 <template>
   <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <BackButton class="mb-4" />
+
     <div v-if="items.length === 0" class="text-center text-gray-500 py-24">
       Your bag is empty.
       <NuxtLink to="/categories" class="text-theme font-semibold ml-1">Continue shopping</NuxtLink>
@@ -76,7 +88,7 @@ async function handlePlaceOrder() {
             type="button"
             class="hover:text-theme"
             :class="step === 'summary' ? 'font-bold text-gray-900 underline underline-offset-4' : 'text-gray-400'"
-            @click="step = 'summary'"
+            @click="goToStep('summary')"
           >
             Summary
           </button>
@@ -84,7 +96,7 @@ async function handlePlaceOrder() {
             type="button"
             class="hover:text-theme"
             :class="step === 'address' ? 'font-bold text-gray-900 underline underline-offset-4' : 'text-gray-400'"
-            @click="step = 'address'"
+            @click="goToStep('address')"
           >
             Address
           </button>
@@ -92,7 +104,7 @@ async function handlePlaceOrder() {
             type="button"
             class="hover:text-theme"
             :class="step === 'payment' ? 'font-bold text-gray-900 underline underline-offset-4' : 'text-gray-400'"
-            @click="step = 'payment'"
+            @click="goToStep('payment')"
           >
             Payment
           </button>

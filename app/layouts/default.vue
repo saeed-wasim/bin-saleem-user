@@ -3,7 +3,7 @@
     <div class="h-screen flex flex-col">
       <Header />
       <main class="flex-1 custom-scrollbar overflow-auto flex flex-col">
-        <div class="flex-1 p-6">
+        <div class="flex-1">
           <slot />
         </div>
         <Footer />

@@ -1,5 +1,5 @@
 <script setup>
-import Hero from "/assets/images/hero.jpg";
+import Hero from "/assets/images/Hero.jpeg";
 
 const {
   categories,

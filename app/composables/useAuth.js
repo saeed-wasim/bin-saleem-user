@@ -28,6 +28,8 @@ export function useAuth() {
     if (import.meta.client) {
       localStorage.setItem(TOKEN_KEY, response.token)
       localStorage.setItem(USER_KEY, JSON.stringify(response.user))
+      useCart().adoptCustomer(response.user.id)
+      useWishlist().fetchWishlist()
     }
 
     return response
@@ -41,6 +43,9 @@ export function useAuth() {
       localStorage.removeItem(TOKEN_KEY)
       localStorage.removeItem(USER_KEY)
     }
+
+    useCart().reset()
+    useWishlist().reset()
   }
 
   // Clears a stale/invalid token and sends the customer back to login so a

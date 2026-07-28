@@ -1,6 +1,10 @@
 <script setup>
 const router = useRouter();
 const { user, logout } = useAuth();
+const { items: wishlistItems, ensureLoaded: ensureWishlistLoaded } = useWishlist();
+const wishlistCount = computed(() => wishlistItems.value.length);
+
+onMounted(() => ensureWishlistLoaded());
 
 const displayName = computed(() => user.value?.name || "");
 const email = computed(() => user.value?.email || "");
@@ -22,6 +26,8 @@ function handleSignOut() {
 
 <template>
   <div class="max-w-4xl mx-auto px-4 py-10 sm:py-14">
+    <BackButton class="mb-4" />
+
     <ClientOnly>
       <div class="rounded-2xl bg-gradient-to-r from-theme to-purple-700 px-6 py-8 sm:px-10 sm:py-10 text-white shadow-lg">
         <div class="flex items-center gap-5">
@@ -43,15 +49,17 @@ function handleSignOut() {
     </ClientOnly>
 
     <div class="mt-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <NuxtLink to="/orders" class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-theme transition-all">
         <p class="text-sm text-gray-500">My Orders</p>
         <p class="mt-1 font-semibold text-gray-900">Track & view history</p>
-      </div>
+      </NuxtLink>
 
-      <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+      <NuxtLink to="/wishlist" class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm hover:shadow-md hover:border-theme transition-all">
         <p class="text-sm text-gray-500">Wishlist</p>
-        <p class="mt-1 font-semibold text-gray-900">Saved items</p>
-      </div>
+        <p class="mt-1 font-semibold text-gray-900">
+          {{ wishlistCount > 0 ? `${wishlistCount} saved item${wishlistCount === 1 ? '' : 's'}` : 'Saved items' }}
+        </p>
+      </NuxtLink>
 
       <div class="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
         <p class="text-sm text-gray-500">Settings</p>

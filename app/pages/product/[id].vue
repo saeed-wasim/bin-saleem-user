@@ -29,6 +29,8 @@ watch(productId, load)
 
 <template>
   <div class="container mx-auto px-4 sm:px-6 py-10">
+    <BackButton class="mb-6" />
+
     <div v-if="loading" class="text-gray-500 text-center py-20">Loading product...</div>
     <div v-else-if="error" class="text-red-500 text-center py-20">Error loading product: {{ error }}</div>
 
