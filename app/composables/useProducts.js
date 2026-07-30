@@ -5,7 +5,7 @@ export const useProducts = () => {
   const error = ref(null)
   const pagination = ref(null)
 
-  const fetchProducts = async ({ categoryId, search, page, limit, append = false } = {}) => {
+  const fetchProducts = async ({ categoryId, search, newArrivals, giftGuide, page, limit, append = false } = {}) => {
     try {
       loading.value = true
       error.value = null
@@ -15,6 +15,8 @@ export const useProducts = () => {
         query: {
           ...(categoryId ? { categoryId } : {}),
           ...(search ? { search } : {}),
+          ...(newArrivals ? { newArrivals: 'true' } : {}),
+          ...(giftGuide ? { giftGuide: 'true' } : {}),
           ...(page ? { page } : {}),
           ...(limit ? { limit } : {}),
         },
@@ -32,6 +34,27 @@ export const useProducts = () => {
     } catch (err) {
       error.value = err.message || 'Failed to fetch products'
       console.error('Error fetching products:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchBestSellers = async ({ limit } = {}) => {
+    try {
+      loading.value = true
+      error.value = null
+      const config = useRuntimeConfig()
+      const response = await $fetch('/api/products/best-sellers', {
+        baseURL: config.public.apiBaseUrl,
+        query: { ...(limit ? { limit } : {}) },
+      })
+      products.value = response
+      pagination.value = null
+      return response
+    } catch (err) {
+      error.value = err.message || 'Failed to fetch best sellers'
+      console.error('Error fetching best sellers:', err)
       throw err
     } finally {
       loading.value = false
@@ -64,6 +87,7 @@ export const useProducts = () => {
     error,
     pagination,
     fetchProducts,
+    fetchBestSellers,
     fetchProduct
   }
 }

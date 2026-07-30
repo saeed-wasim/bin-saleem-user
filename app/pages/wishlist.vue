@@ -1,13 +1,10 @@
 <script setup>
-const { isAuthenticated, loadFromStorage } = useAuth()
+const { loadFromStorage } = useAuth()
 const { items, loading, fetchWishlist } = useWishlist()
-const { open: openLoginDrawer } = useLoginDrawer()
 
 onMounted(() => {
   loadFromStorage()
-  if (isAuthenticated.value) {
-    fetchWishlist()
-  }
+  fetchWishlist()
 })
 </script>
 
@@ -21,20 +18,7 @@ onMounted(() => {
     </div>
 
     <ClientOnly>
-      <div v-if="!isAuthenticated" class="mt-10 text-center py-16 rounded-2xl border border-gray-100 bg-white shadow-sm">
-        <div class="w-16 h-16 mx-auto rounded-full bg-themeSoft flex items-center justify-center text-theme text-2xl">♥</div>
-        <p class="mt-4 text-gray-900 font-semibold">Log in to see your wishlist</p>
-        <p class="mt-1 text-sm text-gray-500">Save your favourite pieces and find them here anytime.</p>
-        <button
-          type="button"
-          class="mt-6 inline-block px-6 py-2.5 bg-theme hover:opacity-90 transition-opacity text-white font-semibold rounded-lg"
-          @click="openLoginDrawer"
-        >
-          Log In
-        </button>
-      </div>
-
-      <div v-else-if="loading" class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div v-if="loading" class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
         <div v-for="n in 4" :key="n" class="rounded-2xl bg-gray-100 aspect-[3/4] animate-pulse" />
       </div>
 
@@ -50,14 +34,14 @@ onMounted(() => {
         </NuxtLink>
       </div>
 
-      <div v-else class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        <NuxtLink v-for="item in items" :key="item.id" :to="`/product/${item.productId}`">
+      <div v-else class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+        <NuxtLink v-for="item in items" :key="item.productId" :to="`/product/${item.productId}`">
           <ProductCard :product="item.product" />
         </NuxtLink>
       </div>
 
       <template #fallback>
-        <div class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div class="mt-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           <div v-for="n in 4" :key="n" class="rounded-2xl bg-gray-100 aspect-[3/4] animate-pulse" />
         </div>
       </template>

@@ -1,4 +1,11 @@
 <script setup>
+const props = defineProps({
+  label: {
+    type: String,
+    default: 'Back',
+  },
+})
+
 const router = useRouter()
 
 function goBack() {
@@ -20,6 +27,6 @@ function goBack() {
       <path d="M19 12H5" />
       <path d="M12 19l-7-7 7-7" />
     </svg>
-    Back
+    {{ label }}
   </button>
 </template>

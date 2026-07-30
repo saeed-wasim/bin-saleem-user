@@ -28,53 +28,114 @@ watch(productId, load)
 </script>
 
 <template>
-  <div class="container mx-auto px-4 sm:px-6 py-10">
-    <BackButton class="mb-6" />
+  <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-10">
+    <BackButton class="mb-4 sm:mb-8" />
 
-    <div v-if="loading" class="text-gray-500 text-center py-20">Loading product...</div>
-    <div v-else-if="error" class="text-red-500 text-center py-20">Error loading product: {{ error }}</div>
+    <div v-if="loading" class="py-20 text-center text-gray-500">
+      Loading product...
+    </div>
 
-    <div v-else-if="product" class="grid grid-cols-1 md:grid-cols-2 gap-10">
-      <div class="rounded-2xl border border-gray-100 shadow-sm bg-white aspect-square flex items-center justify-center overflow-hidden">
+    <div v-else-if="error" class="py-20 text-center text-red-500">
+      {{ error }}
+    </div>
+
+    <div
+      v-else-if="product"
+      class="grid grid-cols-1 lg:grid-cols-[1.7fr_0.9fr] gap-6 lg:gap-10 items-start"
+    >
+      <!-- Image -->
+      <div
+        class="rounded-3xl border border-gray-200 bg-white h-72 sm:h-[450px] lg:h-[650px] flex items-center justify-center overflow-hidden"
+      >
         <img
           v-if="product.image"
           :src="product.image"
           :alt="product.name"
-          class="w-full h-full object-contain"
+          class="max-w-full max-h-full object-contain p-3"
         />
       </div>
 
-      <div>
-        <h1 class="text-xl font-bold uppercase tracking-wide text-gray-900">{{ product.name }}</h1>
-        <p class="text-xs font-semibold text-gray-500 tracking-wider mt-1">STYLE # {{ product.id }}</p>
+      <!-- Details -->
+      <div class="max-w-sm">
+        <h1 class="text-md font-bold uppercase leading-snug text-gray-900">
+          {{ product.name }}
+        </h1>
 
-        <p class="text-2xl font-bold text-theme mt-4">Rs {{ formatPrice(product.price) }}</p>
+        <p
+          v-if="product.sku"
+          class="mt-3 text-sm uppercase tracking-wide text-gray-500"
+        >
+          Style # {{ product.sku }}
+        </p>
 
-        <div v-if="product.length || product.width" class="mt-8">
-          <h2 class="text-sm font-bold uppercase tracking-wide text-gray-900 mb-2">Dimensions</h2>
+        <p class="mt-4 text-md font-semibold text-theme">
+          Rs {{ formatPrice(product.price) }}
+        </p>
+
+        <!-- Dimensions -->
+        <div
+          v-if="product.length || product.width"
+          class="mt-6 sm:mt-10"
+        >
+          <h3 class="font-semibold uppercase text-gray-900 mb-3">
+            Dimensions
+          </h3>
+
           <p class="text-sm text-gray-600">
-            <span v-if="product.length">Length: {{ product.length }} </span>
-            <span v-if="product.width">Width: {{ product.width }} </span>
-            Cm
+            <span v-if="product.length">
+              Length: {{ product.length }}
+            </span>
+
+            <span
+              v-if="product.length && product.width"
+              class="mx-2"
+            >
+              |
+            </span>
+
+            <span v-if="product.width">
+              Width: {{ product.width }}
+            </span>
+
+            <span> cm</span>
           </p>
         </div>
 
-        <p class="text-sm text-gray-600 mt-8 leading-relaxed">{{ product.description }}</p>
+        <!-- Description -->
+        <p
+          v-if="product.description"
+          class="mt-6 sm:mt-10 text-sm leading-7 text-gray-600"
+        >
+          {{ product.description }}
+        </p>
 
-        <div v-if="isRing" class="mt-8">
-          <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">Size</label>
+        <!-- Ring Size -->
+        <div
+          v-if="isRing"
+          class="mt-6 sm:mt-8"
+        >
+          <label class="block text-sm font-semibold mb-2">
+            Size
+          </label>
+
           <select
             v-model="selectedSize"
-            class="border border-gray-300 rounded px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-theme"
+            class="w-28 rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-theme"
           >
-            <option v-for="size in sizes" :key="size" :value="size">{{ size }}</option>
+            <option
+              v-for="size in sizes"
+              :key="size"
+              :value="size"
+            >
+              {{ size }}
+            </option>
           </select>
         </div>
 
+        <!-- Button -->
         <button
-          type="button"
-          class="w-full mt-6 bg-theme hover:opacity-90 transition-opacity text-white font-semibold uppercase tracking-wide rounded py-3"
           @click="handleAddToBag"
+          class="mt-6 sm:mt-10 bg-theme px-10 py-3 text-white font-medium uppercase tracking-wide hover:opacity-90 transition"
         >
           Add to Bag
         </button>

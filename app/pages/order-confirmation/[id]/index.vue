@@ -2,6 +2,7 @@
 const route = useRoute()
 const orderId = computed(() => route.params.id)
 const { order, loading, error, fetchOrder, syncPaymentStatus } = useOrders()
+const { clearCart } = useCart()
 
 function formatPrice(value) {
   return Number(value).toLocaleString('en-IN')
@@ -17,6 +18,11 @@ onMounted(async () => {
     } catch (err) {
       console.error('Error syncing payment status:', err)
     }
+  }
+  // The bag is only cleared once payment is actually confirmed — if the
+  // customer had cancelled instead, it stays intact so they can retry.
+  if (order.value?.paymentStatus === 'Paid') {
+    clearCart()
   }
 })
 </script>

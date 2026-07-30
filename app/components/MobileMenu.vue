@@ -13,7 +13,10 @@ const firstName = computed(() => user.value?.name?.split(' ')[0] || '')
 
 const shopLinks = [
   { label: 'Home', to: '/' },
-  { label: 'Categories', to: '/categories' },
+  { label: 'Collections', to: '/categories' },
+  { label: 'New Arrivals', to: '/new-arrivals' },
+  { label: 'Best Sellers', to: '/best-sellers' },
+  { label: 'Gift Guide', to: '/gift-guide' },
   { label: 'Stores', to: '/dashboard' },
 ]
 
@@ -31,6 +34,7 @@ const helpLinks = [
   { label: 'Exchange Policy', to: '/exchange-policy' },
   { label: 'Order & Shipping', to: '/order-shipping' },
   { label: 'Store Locations', to: '/stores' },
+  { label: 'Contact Us', to: '/contact-us' },
 ]
 
 function close() {

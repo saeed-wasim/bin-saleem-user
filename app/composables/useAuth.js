@@ -29,7 +29,7 @@ export function useAuth() {
       localStorage.setItem(TOKEN_KEY, response.token)
       localStorage.setItem(USER_KEY, JSON.stringify(response.user))
       useCart().adoptCustomer(response.user.id)
-      useWishlist().fetchWishlist()
+      useWishlist().adoptCustomer()
     }
 
     return response
@@ -48,13 +48,13 @@ export function useAuth() {
     useWishlist().reset()
   }
 
-  // Clears a stale/invalid token and sends the customer back to login so a
-  // fresh one is issued, instead of leaving them stuck on repeated 401s.
-  async function sessionExpired(redirectPath) {
+  // Clears a stale/invalid token and prompts for a fresh one via the login
+  // drawer, right where the customer was, instead of bouncing them to a
+  // separate page and losing their place (e.g. mid-checkout).
+  function sessionExpired() {
     logout()
     if (import.meta.client) {
-      const path = redirectPath || useRoute().fullPath
-      await navigateTo(`/login?redirect=${encodeURIComponent(path)}&reason=session`)
+      useLoginDrawer().open()
     }
   }
 

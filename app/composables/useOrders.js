@@ -55,6 +55,33 @@ export const useOrders = () => {
     }
   }
 
+  // Resumes payment on an order that's still "Pending" (e.g. the customer
+  // cancelled or closed the Stripe tab) instead of placing a brand new order
+  // for the same items, which would reserve stock twice.
+  const resumeCheckoutSession = async (orderId) => {
+    try {
+      loading.value = true
+      error.value = null
+      const config = useRuntimeConfig()
+      const { token } = useAuth()
+      const response = await $fetch(`/api/payments/${orderId}/create-checkout-session`, {
+        baseURL: config.public.apiBaseUrl,
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token.value}` },
+      })
+      return response
+    } catch (err) {
+      if (err.response?.status === 401 || err.response?.status === 404) {
+        await useAuth().sessionExpired()
+      }
+      error.value = err.data?.error || err.message || 'Failed to resume checkout'
+      console.error('Error resuming checkout session:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   // Reconciles a "Pending" order against Stripe directly — a safety net for
   // when the webhook forwarder isn't running (e.g. local dev without the
   // Stripe CLI), so the confirmation page doesn't get stuck showing Pending.
@@ -121,6 +148,7 @@ export const useOrders = () => {
     error,
     placeOrder,
     createCheckoutSession,
+    resumeCheckoutSession,
     syncPaymentStatus,
     fetchOrder,
     fetchOrders,

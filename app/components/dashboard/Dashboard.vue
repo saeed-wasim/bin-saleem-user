@@ -41,50 +41,85 @@ onMounted(async () => {
 
 <template>
   <div>
+    <!-- Hero -->
     <div>
       <img :src="Hero" alt="" class="w-full" />
     </div>
 
-    <div class="container mx-auto px-6 py-12">
-      <div v-if="categoriesLoading" class="text-gray-500 text-center">
+    <div class="container mx-auto px-4 sm:px-6 py-10">
+
+      <!-- Loading -->
+      <div v-if="categoriesLoading" class="text-center text-gray-500">
         Loading categories...
       </div>
-      <div v-else-if="categoriesError" class="text-red-500 text-center">
-        Error loading categories: {{ categoriesError }}
+
+      <div v-else-if="categoriesError" class="text-center text-red-500">
+        {{ categoriesError }}
       </div>
 
       <template v-else>
-        <div class="flex items-center gap-6 sm:gap-8 overflow-x-auto border-b border-gray-200 mb-8 no-scrollbar">
-          <button
-            v-for="category in categories"
-            :key="category.id"
-            type="button"
-            class="shrink-0 pb-3 text-sm sm:text-base font-medium border-b-2 transition-colors whitespace-nowrap"
-            :class="
-              activeCategoryId === category.id
-                ? 'border-theme text-theme font-semibold'
-                : 'border-transparent text-gray-600 hover:text-theme'
-            "
-            @click="activeCategoryId = category.id"
+
+        <!-- Heading -->
+        <div class="flex items-center gap-5 mb-10">
+          <div class="flex-1 h-px bg-gray-300"></div>
+
+          <h2
+            class="shrink-0 uppercase tracking-[0.25em] text-sm sm:text-base font-medium text-gray-800"
           >
-            {{ category.name }}
-          </button>
+            Shop by Category
+          </h2>
+
+          <div class="flex-1 h-px bg-gray-300"></div>
         </div>
 
-        <div v-if="productsLoading" class="text-gray-500 text-center">
+        <!-- Categories -->
+        <div
+          class="flex md:justify-center justify-start gap-4 overflow-x-auto no-scrollbar pb-3"
+        >
+          <template
+            v-for="(category, index) in categories"
+            :key="category.id"
+          >
+            <NuxtLink
+              :to="{ path: '/categories', query: { categoryId: category.id } }"
+              :class="[
+                'flex-shrink-0',
+                'flex items-center justify-center text-center',
+                'h-14 min-w-[140px] px-6',
+                'font-semibold text-xl transition-all duration-300',
+                index === 0
+                  ? 'bg-theme text-white'
+                  : 'bg-gray-300 text-white hover:bg-gray-400'
+              ]"
+            >
+              {{ category.name }}
+            </NuxtLink>
+          </template>
+        </div>
+
+        <!-- Products -->
+        <div v-if="productsLoading" class="text-center py-12">
           Loading products...
         </div>
-        <div v-else-if="productsError" class="text-red-500 text-center">
-          Error loading products: {{ productsError }}
-        </div>
+
         <div
-          v-else-if="filteredProducts.length === 0"
-          class="text-gray-500 text-center"
+          v-else-if="productsError"
+          class="text-center text-red-500 py-12"
         >
-          No products found in this category
+          {{ productsError }}
         </div>
 
-        <div v-else class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div
+          v-else-if="filteredProducts.length === 0"
+          class="text-center text-gray-500 py-12"
+        >
+          No products found.
+        </div>
+
+        <div
+          v-else
+          class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 mt-10"
+        >
           <NuxtLink
             v-for="product in filteredProducts.slice(0, 20)"
             :key="product.id"
@@ -94,14 +129,16 @@ onMounted(async () => {
           </NuxtLink>
         </div>
 
-        <div v-if="activeCategory" class="mt-8 text-center">
+        <!-- View All -->
+        <div v-if="activeCategory" class="text-center mt-10">
           <NuxtLink
             :to="{ path: '/categories', query: { categoryId: activeCategory.id } }"
-            class="inline-block border border-theme text-theme hover:bg-theme hover:text-white transition-colors px-6 py-2 font-semibold"
+            class="inline-flex items-center border border-theme text-theme hover:bg-theme hover:text-white px-8 py-3 font-semibold transition"
           >
             View All {{ activeCategory.name }}
           </NuxtLink>
         </div>
+
       </template>
     </div>
   </div>

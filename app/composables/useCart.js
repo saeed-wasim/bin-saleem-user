@@ -29,23 +29,29 @@ export function useCart() {
     }
   }
 
-  // Called right after a successful login: switch to this customer's own
-  // saved cart. If they've never shopped on this device before, keep
-  // whatever they added while browsing as a guest as the start of their cart.
+  // Called right after a successful login: merge whatever was just added as
+  // a guest (including after a prior logout on this same device) into this
+  // customer's own saved cart, so neither set of items is silently dropped.
   function adoptCustomer(id) {
     if (!import.meta.client) return
-    const wasGuest = customerId.value === null
+    const guestItems = items.value
     customerId.value = id
     const stored = localStorage.getItem(cartStorageKey(id))
-    if (stored) {
-      items.value = JSON.parse(stored)
-    } else if (wasGuest) {
-      persist()
-    } else {
-      items.value = []
-      persist()
+    const savedItems = stored ? JSON.parse(stored) : []
+
+    const merged = [...savedItems]
+    for (const guestItem of guestItems) {
+      const existing = merged.find((i) => i.productId === guestItem.productId && i.size === guestItem.size)
+      if (existing) {
+        existing.qty += guestItem.qty
+      } else {
+        merged.push(guestItem)
+      }
     }
+
+    items.value = merged
     loaded.value = true
+    persist()
   }
 
   // Called on logout: hide the cart immediately without deleting the
@@ -71,6 +77,7 @@ export function useCart() {
           price: Number(product.price),
           image: product.image,
           color: product.color,
+          category: product.category?.name ?? null,
           size,
           qty,
         },
