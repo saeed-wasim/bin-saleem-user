@@ -28,7 +28,7 @@ watch(productId, load)
 </script>
 
 <template>
-  <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-10">
+  <div class="container mx-auto px-4 sm:px-6 py-4 sm:py-6">
     <BackButton class="mb-4 sm:mb-8" />
 
     <div v-if="loading" class="py-20 text-center text-gray-500">
@@ -118,18 +118,7 @@ watch(productId, load)
             Size
           </label>
 
-          <select
-            v-model="selectedSize"
-            class="w-28 rounded border border-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-theme"
-          >
-            <option
-              v-for="size in sizes"
-              :key="size"
-              :value="size"
-            >
-              {{ size }}
-            </option>
-          </select>
+          <SizeSelect v-model="selectedSize" :options="sizes" />
         </div>
 
         <!-- Button -->

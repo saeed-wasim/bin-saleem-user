@@ -28,7 +28,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="max-w-3xl mx-auto px-4 sm:px-6 py-16 text-center">
+  <div class="mx-auto px-4 sm:px-6 py-16 text-center">
     <div class="text-left mb-4">
       <BackButton />
     </div>

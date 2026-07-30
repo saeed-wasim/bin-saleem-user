@@ -1,6 +1,4 @@
 <script setup>
-import Hero from "/assets/images/Hero.jpeg";
-
 const {
   categories,
   loading: categoriesLoading,
@@ -43,7 +41,7 @@ onMounted(async () => {
   <div>
     <!-- Hero -->
     <div>
-      <img :src="Hero" alt="" class="w-full" />
+      <Hero/>
     </div>
 
     <div class="container mx-auto px-4 sm:px-6 py-10">
@@ -87,9 +85,7 @@ onMounted(async () => {
                 'flex items-center justify-center text-center',
                 'h-14 min-w-[140px] px-6',
                 'font-semibold text-xl transition-all duration-300',
-                index === 0
-                  ? 'bg-theme text-white'
-                  : 'bg-gray-300 text-white hover:bg-gray-400'
+                'bg-[#cccccc] text-white'
               ]"
             >
               {{ category.name }}
@@ -133,7 +129,7 @@ onMounted(async () => {
         <div v-if="activeCategory" class="text-center mt-10">
           <NuxtLink
             :to="{ path: '/categories', query: { categoryId: activeCategory.id } }"
-            class="inline-flex items-center border border-theme text-theme hover:bg-theme hover:text-white px-8 py-3 font-semibold transition"
+            class="inline-flex items-center border border-theme text-theme hover:bg-theme hover:text-white px-8 py-3 font-semibold transition rounded"
           >
             View All {{ activeCategory.name }}
           </NuxtLink>

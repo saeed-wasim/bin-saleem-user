@@ -69,9 +69,9 @@ const mainNavLinks = [
 <template>
   <header class="sticky top-0 z-50 bg-white shadow-sm">
    <div class="bg-themeSoft text-theme text-xs sm:text-sm">
-  <div class="w-full flex justify-center overflow-hidden">
+  <div class="mx-auto flex items-center justify-center w-[40%] overflow-hidden">
     <div
-      class="w-[40%] flex items-center justify-center py-2 animate-marquee"
+      class="flex items-center justify-center py-2 animate-marquee"
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +157,7 @@ const mainNavLinks = [
             type="text"
             placeholder="Search our collection..."
             autofocus
-            class="w-full border border-gray-300 rounded-l px-4 py-2 pr-9 text-sm focus:outline-none focus:ring-1 focus:ring-theme"
+            class="w-full border border-gray-300 rounded-l px-4 py-2 pr-9 text-sm focus:outline-none"
           />
           <button
             v-if="searchQuery"
@@ -213,7 +213,7 @@ const mainNavLinks = [
             v-model="searchQuery"
             type="text"
             placeholder="Search our collection..."
-            class="w-full border border-gray-300 rounded-l px-4 py-2 pr-9 text-sm focus:outline-none focus:ring-1 focus:ring-theme"
+            class="w-full border border-gray-300 rounded-l px-4 py-2 pr-9 text-sm focus:outline-none"
           />
           <button
             v-if="searchQuery"
@@ -393,7 +393,7 @@ const mainNavLinks = [
         :class="
           route.path === link.to
             ? 'text-theme font-semibold border-theme'
-            : 'text-gray-600 border-transparent hover:text-theme'
+            : 'font-semibold border-transparent hover:text-theme'
         "
       >
         {{ link.label }}

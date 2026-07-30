@@ -14,14 +14,7 @@ export function useAuth() {
     }
   }
 
-  async function loginWithGoogle(idToken) {
-    const config = useRuntimeConfig()
-    const response = await $fetch('/api/auth/google', {
-      baseURL: config.public.apiBaseUrl,
-      method: 'POST',
-      body: { idToken },
-    })
-
+  async function applySession(response) {
     token.value = response.token
     user.value = response.user
 
@@ -33,6 +26,39 @@ export function useAuth() {
     }
 
     return response
+  }
+
+  async function loginWithGoogle(idToken) {
+    const config = useRuntimeConfig()
+    const response = await $fetch('/api/auth/google', {
+      baseURL: config.public.apiBaseUrl,
+      method: 'POST',
+      body: { idToken },
+    })
+
+    return applySession(response)
+  }
+
+  async function loginWithPassword(email, password) {
+    const config = useRuntimeConfig()
+    const response = await $fetch('/api/auth/customer-login', {
+      baseURL: config.public.apiBaseUrl,
+      method: 'POST',
+      body: { email, password },
+    })
+
+    return applySession(response)
+  }
+
+  async function register(name, email, password) {
+    const config = useRuntimeConfig()
+    const response = await $fetch('/api/auth/register', {
+      baseURL: config.public.apiBaseUrl,
+      method: 'POST',
+      body: { name, email, password },
+    })
+
+    return applySession(response)
   }
 
   function logout() {
@@ -64,6 +90,8 @@ export function useAuth() {
     isAuthenticated: computed(() => !!token.value),
     loadFromStorage,
     loginWithGoogle,
+    loginWithPassword,
+    register,
     logout,
     sessionExpired,
   }

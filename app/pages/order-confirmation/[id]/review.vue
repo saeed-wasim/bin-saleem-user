@@ -9,7 +9,7 @@ onMounted(() => fetchOrder(orderId.value))
 </script>
 
 <template>
-  <div class="max-w-2xl mx-auto px-4 sm:px-6 py-16">
+  <div class="mx-auto px-4 sm:px-6 py-16">
     <BackButton class="mb-4" />
 
     <div v-if="loading" class="text-gray-500 text-center">Loading order...</div>

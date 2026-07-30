@@ -109,7 +109,7 @@ async function handlePlaceOrder() {
 </script>
 
 <template>
-  <div class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="mx-auto px-4 sm:px-6 py-4 sm:py-6">
     <BackButton class="mb-6" label="Back" />
 
     <div v-if="items.length === 0" class="text-center text-gray-500 py-24">
