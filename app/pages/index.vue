@@ -4,7 +4,7 @@ import Dashboard from "../components/dashboard/Dashboard.vue";
 
 <template>
   <div>
-    <NoticePopup />
+    <!-- <NoticePopup /> -->
     <Dashboard />
   </div>
 </template>

@@ -19,6 +19,9 @@ const {
 const categoryId = computed(() =>
   route.query.categoryId ? Number(route.query.categoryId) : null,
 );
+const subcategoryQuery = computed(() =>
+  route.query.subcategory ? String(route.query.subcategory).trim() : "",
+);
 const searchQuery = computed(() =>
   route.query.search ? String(route.query.search).trim() : "",
 );
@@ -26,6 +29,12 @@ const isSearching = computed(() => searchQuery.value.length > 0);
 
 const activeCategory = computed(() =>
   categories.value.find((c) => c.id === categoryId.value),
+);
+const activeSubcategory = computed(() =>
+  subcategoryQuery.value || null,
+);
+const availableSubcategories = computed(() =>
+  activeCategory.value?.subcategories || [],
 );
 
 const hasMore = computed(
@@ -37,6 +46,7 @@ const loadingMore = ref(false);
 function loadFirstPage() {
   fetchProducts({
     categoryId: categoryId.value,
+    subcategory: activeSubcategory.value,
     search: searchQuery.value,
     page: 1,
     limit: PAGE_SIZE,
@@ -49,6 +59,7 @@ async function loadMore() {
   try {
     await fetchProducts({
       categoryId: categoryId.value,
+      subcategory: activeSubcategory.value,
       search: searchQuery.value,
       page: pagination.value.page + 1,
       limit: PAGE_SIZE,
@@ -64,8 +75,8 @@ onMounted(() => {
   if (categoryId.value || isSearching.value) loadFirstPage();
 });
 
-watch([categoryId, searchQuery], ([id, search]) => {
-  if (id || search) loadFirstPage();
+watch([categoryId, subcategoryQuery, searchQuery], ([id, subcategory, search]) => {
+  if (id || subcategory || search) loadFirstPage();
 });
 </script>
 
@@ -121,6 +132,24 @@ watch([categoryId, searchQuery], ([id, search]) => {
         <h1 class="font-serif text-2xl sm:text-3xl font-bold text-theme">
           {{ activeCategory?.name || "Products" }}
         </h1>
+        <div v-if="availableSubcategories.length" class="mt-5 flex flex-wrap justify-center gap-2">
+          <NuxtLink
+            :to="{ path: '/categories', query: { categoryId: categoryId, subcategory: '' } }"
+            class="rounded-full px-3 py-1 text-xs font-semibold border"
+            :class="activeSubcategory ? 'border-theme text-theme bg-white' : 'bg-theme text-white border-theme'"
+          >
+            All
+          </NuxtLink>
+          <NuxtLink
+            v-for="item in availableSubcategories"
+            :key="item"
+            :to="{ path: '/categories', query: { categoryId: categoryId, subcategory: item } }"
+            class="rounded-full px-3 py-1 text-xs font-semibold border"
+            :class="activeSubcategory === item ? 'bg-theme text-white border-theme' : 'border-theme text-theme bg-white'"
+          >
+            {{ item }}
+          </NuxtLink>
+        </div>
       </div>
 
       <div v-if="productsLoading && !products.length" class="text-gray-500 text-center">
@@ -201,11 +230,18 @@ watch([categoryId, searchQuery], ([id, search]) => {
           <div
             class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"
           />
-          <p
-            class="absolute bottom-4 left-4 right-4 text-white text-lg font-bold"
-          >
-            {{ category.name }}
-          </p>
+          <div class="absolute bottom-4 left-4 right-4">
+            <p class="text-white text-lg font-bold">{{ category.name }}</p>
+            <div v-if="category.subcategories?.length" class="mt-2 flex flex-wrap gap-1">
+              <span
+                v-for="item in category.subcategories.slice(0, 3)"
+                :key="item"
+                class="rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-semibold text-white"
+              >
+                {{ item }}
+              </span>
+            </div>
+          </div>
         </NuxtLink>
       </div>
     </div>

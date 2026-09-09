@@ -72,7 +72,7 @@ onMounted(async () => {
 
         <!-- Categories -->
         <div
-          class="flex md:justify-center justify-start gap-4 overflow-x-auto no-scrollbar pb-3"
+          class="flex md:justify-center justify-start gap-4 overflow-x-auto scrollbar pb-3"
         >
           <template
             v-for="(category, index) in categories"
@@ -88,7 +88,7 @@ onMounted(async () => {
                 'bg-[#cccccc] text-white'
               ]"
             >
-              {{ category.name }}
+              <span>{{ category.name }}</span>
             </NuxtLink>
           </template>
         </div>
