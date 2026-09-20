@@ -139,8 +139,10 @@ async function handlePlaceOrder() {
           </div>
         </div>
 
-        <div>
-          <div class="border border-gray-200 rounded p-5 text-sm">
+        <div
+          :class="step === 'payment' ? '' : 'lg:flex lg:h-full lg:flex-col lg:items-end lg:justify-end'"
+        >
+          <div v-if="step === 'payment'" class="border border-gray-200 rounded p-5 text-sm">
             <h2 class="text-sm font-bold uppercase tracking-wider text-gray-900 mb-4">Order Summary</h2>
 
             <div class="space-y-3">
@@ -191,6 +193,19 @@ async function handlePlaceOrder() {
               </div>
             </div>
           </div>
+
+          <template v-else>
+            <button
+              type="button"
+              class="rounded bg-theme px-6 py-2.5 text-xs font-semibold uppercase tracking-wide text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+              :disabled="placing"
+              @click="handlePlaceOrder"
+            >
+              {{ placing ? 'Please wait...' : 'Next' }}
+            </button>
+
+            <p v-if="placeError" class="mt-3 text-right text-sm text-red-500">{{ placeError }}</p>
+          </template>
         </div>
       </div>
     </template>

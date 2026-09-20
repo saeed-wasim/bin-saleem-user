@@ -10,7 +10,6 @@ const emit = defineEmits(['close'])
 
 const error = ref(null)
 const loading = ref(false)
-const googleButton = ref(null)
 
 const mode = ref('login')
 const name = ref('')
@@ -18,10 +17,7 @@ const email = ref('')
 const password = ref('')
 const showPassword = ref(false)
 
-const config = useRuntimeConfig()
-const { loginWithGoogle, loginWithPassword, register } = useAuth()
-
-let scriptLoading = false
+const { loginWithPassword, register } = useAuth()
 
 function resetForm() {
   name.value = ''
@@ -53,62 +49,15 @@ async function handleSubmit() {
   }
 }
 
-async function handleGoogleCredential(response) {
-  error.value = null
-  loading.value = true
-  try {
-    await loginWithGoogle(response.credential)
-    emit('close')
-  } catch (err) {
-    error.value = err?.data?.error || err?.message || 'Google sign-in failed'
-  } finally {
-    loading.value = false
-  }
-}
-
-function renderGoogleButton() {
-  if (!window.google || !googleButton.value) return
-  window.google.accounts.id.initialize({
-    client_id: config.public.googleClientId,
-    callback: handleGoogleCredential,
-  })
-  window.google.accounts.id.renderButton(googleButton.value, {
-    theme: 'outline',
-    size: 'large',
-    width: 320,
-  })
-}
-
-function loadGoogleButton() {
-  if (!config.public.googleClientId) return
-
-  if (window.google?.accounts?.id) {
-    renderGoogleButton()
-    return
-  }
-
-  if (scriptLoading) return
-  scriptLoading = true
-
-  const script = document.createElement('script')
-  script.src = 'https://accounts.google.com/gsi/client'
-  script.async = true
-  script.defer = true
-  script.onload = renderGoogleButton
-  document.head.appendChild(script)
-}
-
 watch(
   () => props.show,
-  async (visible) => {
+  (visible) => {
     if (!visible) {
       mode.value = 'login'
       resetForm()
       return
     }
     error.value = null
-    await nextTick()
-    loadGoogleButton()
   }
 )
 </script>
@@ -265,19 +214,6 @@ watch(
                   </button>
                 </template>
               </p>
-
-              <div class="flex items-center gap-3 mb-4">
-                <div class="h-px flex-1 bg-gray-200" />
-                <span class="text-xs text-gray-400 uppercase">or</span>
-                <div class="h-px flex-1 bg-gray-200" />
-              </div>
-
-             <div class="px-5">
-               <div
-                ref="googleButton"
-                class="flex justify-center w-full "
-              />
-             </div>
             </div>
           </div>
         </div>
