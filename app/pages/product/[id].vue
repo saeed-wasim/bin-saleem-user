@@ -62,10 +62,17 @@ watch(productId, load)
         </h1>
 
         <p
-          v-if="product.sku"
+          v-if="product.variantGroupId"
           class="mt-3 text-sm uppercase tracking-wide text-gray-500"
         >
-          Style # {{ product.sku }}
+          Style # {{ product.variantGroupId }}
+        </p>
+
+        <p
+          v-if="product.color"
+          class="mt-3 text-sm uppercase tracking-wide text-gray-500"
+        >
+          Style # {{ product.color }}
         </p>
 
         <p class="mt-4 text-md font-semibold text-theme">
