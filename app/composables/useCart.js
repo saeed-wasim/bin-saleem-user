@@ -114,6 +114,38 @@ export function useCart() {
     persist()
   }
 
+  // Cart items cache name/price/image from whenever they were added, so a
+  // product that's since been deleted or edited in admin would otherwise
+  // keep showing stale (or entirely nonexistent) data indefinitely — and
+  // checkout would fail on it anyway since the productId no longer exists.
+  async function syncWithCatalog() {
+    if (!import.meta.client || items.value.length === 0) return
+    const config = useRuntimeConfig()
+
+    const resolved = await Promise.all(
+      items.value.map(async (item) => {
+        try {
+          const product = await $fetch(`/api/products/${item.productId}`, {
+            baseURL: config.public.apiBaseUrl,
+          })
+          return {
+            ...item,
+            name: product.name,
+            price: Number(product.price),
+            image: product.image,
+            color: product.color,
+            category: product.category?.name ?? null,
+          }
+        } catch {
+          return null
+        }
+      })
+    )
+
+    items.value = resolved.filter(Boolean)
+    persist()
+  }
+
   const subtotal = computed(() => items.value.reduce((sum, i) => sum + i.price * i.qty, 0))
   const gst = computed(() => Math.round(subtotal.value * GST_RATE * 100) / 100)
   const shipping = computed(() => 0)
@@ -127,6 +159,7 @@ export function useCart() {
     updateSize,
     removeItem,
     clearCart,
+    syncWithCatalog,
     adoptCustomer,
     reset,
     subtotal,

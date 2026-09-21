@@ -1,5 +1,5 @@
 <script setup>
-const { items, subtotal, gst, total, loadFromStorage, clearCart } = useCart()
+const { items, subtotal, gst, total, loadFromStorage, clearCart, syncWithCatalog } = useCart()
 const { placeOrder, createCheckoutSession, resumeCheckoutSession, fetchOrder } = useOrders()
 const { isAuthenticated, loadFromStorage: loadAuthFromStorage } = useAuth()
 const { open: openLoginDrawer } = useLoginDrawer()
@@ -14,6 +14,7 @@ const pendingOrderId = ref(null)
 onMounted(async () => {
   loadFromStorage()
   loadAuthFromStorage()
+  syncWithCatalog()
 
   const returnedOrderId = route.query.orderId
   if (returnedOrderId) {
