@@ -43,7 +43,7 @@ const quickLinks = [
                 d="M3 5a2 2 0 012-2h2.28a1 1 0 01.98.8l.72 3.6a1 1 0 01-.5 1.1l-1.5.86a12 12 0 006 6l.86-1.5a1 1 0 011.1-.5l3.6.72a1 1 0 01.8.98V19a2 2 0 01-2 2h-1C9.4 21 3 14.6 3 6V5z"
               />
             </svg>
-            042-111 801 802
+            0300-1234567
           </li>
           <li class="flex items-center gap-2.5">
             <svg
@@ -60,7 +60,7 @@ const quickLinks = [
                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
               />
             </svg>
-            wecare@binsaleemjewellery.pk
+            admin@binsaleemjewellery.pk
           </li>
           <li class="flex items-center gap-2.5">
             <svg
@@ -78,7 +78,7 @@ const quickLinks = [
               />
               <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            3-Z DHA Lahore
+            Bahria Phase7,Rwp
           </li>
           <li class="flex items-center gap-2.5">
             <svg
@@ -94,7 +94,7 @@ const quickLinks = [
               <circle cx="12" cy="12" r="9" />
               <path d="M12 7v5l3 3" />
             </svg>
-            11:00 AM to 7:00 PM (Mon-Sat)
+            11:00 AM to 12:00 PM 
           </li>
         </ul>
       </div>
