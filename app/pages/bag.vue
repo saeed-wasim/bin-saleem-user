@@ -1,6 +1,6 @@
 <script setup>
-const { items, subtotal, gst, total, loadFromStorage } = useCart()
-const { createCheckoutSession, resumeCheckoutSession, fetchOrder } = useOrders()
+const { items, subtotal, gst, total, loadFromStorage, clearCart } = useCart()
+const { placeOrder, createCheckoutSession, resumeCheckoutSession, fetchOrder } = useOrders()
 const { isAuthenticated, loadFromStorage: loadAuthFromStorage } = useAuth()
 const { open: openLoginDrawer } = useLoginDrawer()
 const route = useRoute()
@@ -86,6 +86,25 @@ async function handlePlaceOrder() {
     return
   }
 
+  const paymentMethod = paymentTabRef.value?.getPaymentMethod()
+
+  if (paymentMethod === 'Cash on Delivery') {
+    placing.value = true
+    try {
+      const created = await placeOrder({
+        items: items.value.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size })),
+        address: address.value,
+        paymentMethod,
+      })
+      clearCart()
+      router.push(`/order-confirmation/${created.id}`)
+    } catch (err) {
+      placeError.value = err.data?.error || err.message || 'Unable to place order'
+      placing.value = false
+    }
+    return
+  }
+
   placing.value = true
   try {
     const session = pendingOrderId.value
@@ -93,7 +112,7 @@ async function handlePlaceOrder() {
       : await createCheckoutSession({
           items: items.value.map((i) => ({ productId: i.productId, qty: i.qty, size: i.size })),
           address: address.value,
-          paymentMethod: paymentTabRef.value?.getPaymentMethod(),
+          paymentMethod,
         })
     // The cart is intentionally left alone here — if the customer cancels or
     // closes the Stripe tab, they land back on /bag and can retry against
@@ -130,7 +149,7 @@ async function handlePlaceOrder() {
         />
       </div>
 
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div class="grid grid-cols-1 lg:grid-cols-1 gap-8">
         <div class="lg:col-span-2">
           <div class="border border-gray-200 rounded p-6">
             <BagSummaryTab v-if="step === 'summary'" />

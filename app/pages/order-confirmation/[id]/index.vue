@@ -19,9 +19,10 @@ onMounted(async () => {
       console.error('Error syncing payment status:', err)
     }
   }
-  // The bag is only cleared once payment is actually confirmed — if the
-  // customer had cancelled instead, it stays intact so they can retry.
-  if (order.value?.paymentStatus === 'Paid') {
+  // The bag is only cleared once the order is actually confirmed — if the
+  // customer had cancelled a card payment instead, it stays intact so they
+  // can retry. COD orders are confirmed immediately, same as a paid order.
+  if (order.value?.paymentStatus === 'Paid' || order.value?.paymentStatus === 'COD') {
     clearCart()
   }
 })
