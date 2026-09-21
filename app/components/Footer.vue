@@ -78,7 +78,7 @@ const quickLinks = [
               />
               <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            Bahria Phase7,Rwp
+            Bahria Phase 7, Rwp
           </li>
           <li class="flex items-center gap-2.5">
             <svg
@@ -94,7 +94,7 @@ const quickLinks = [
               <circle cx="12" cy="12" r="9" />
               <path d="M12 7v5l3 3" />
             </svg>
-            11:00 AM to 12:00 PM 
+            11:00 AM to 10:00 PM 
           </li>
         </ul>
       </div>
