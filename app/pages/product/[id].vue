@@ -1,30 +1,32 @@
 <script setup>
-const route = useRoute()
-const productId = computed(() => route.params.id)
+const route = useRoute();
+const productId = computed(() => route.params.id);
 
-const { product, loading, error, fetchProduct } = useProducts()
-const { addItem } = useCart()
+const { product, loading, error, fetchProduct } = useProducts();
+const { addItem } = useCart();
 
-const sizes = ['5', '6', '7', '8', '9', '10', '11', '12', '13']
-const selectedSize = ref('7')
+const sizes = ["5", "6", "7", "8", "9", "10", "11", "12", "13"];
+const selectedSize = ref("7");
 
-const isRing = computed(() => product.value?.category?.name?.toLowerCase() === 'rings')
+const isRing = computed(
+  () => product.value?.category?.name?.toLowerCase() === "rings",
+);
 
 function formatPrice(price) {
-  return Number(price).toLocaleString('en-IN')
+  return Number(price).toLocaleString("en-IN");
 }
 
 async function load() {
-  await fetchProduct(productId.value)
+  await fetchProduct(productId.value);
 }
 
 function handleAddToBag() {
-  addItem(product.value, { size: selectedSize.value, qty: 1 })
-  navigateTo('/bag')
+  addItem(product.value, { size: selectedSize.value, qty: 1 });
+  navigateTo("/bag");
 }
 
-onMounted(load)
-watch(productId, load)
+onMounted(load);
+watch(productId, load);
 </script>
 
 <template>
@@ -60,6 +62,10 @@ watch(productId, load)
         <h1 class="text-md font-bold uppercase leading-snug text-gray-900">
           {{ product.name }}
         </h1>
+        
+        <p class="mt-4 text-md font-semibold text-theme">
+          Rs {{ formatPrice(product.price) }}
+        </p>
 
         <p
           v-if="product.variantGroupId"
@@ -72,37 +78,19 @@ watch(productId, load)
           v-if="product.color"
           class="mt-3 text-sm uppercase tracking-wide text-gray-500"
         >
-          Style # {{ product.color }}
-        </p>
-
-        <p class="mt-4 text-md font-semibold text-theme">
-          Rs {{ formatPrice(product.price) }}
+          Color: {{ product.color }}
         </p>
 
         <!-- Dimensions -->
-        <div
-          v-if="product.length || product.width"
-          class="mt-6 sm:mt-10"
-        >
-          <h3 class="font-semibold uppercase text-gray-900 mb-3">
-            Dimensions
-          </h3>
+        <div v-if="product.length || product.width" class="mt-6 sm:mt-10">
+          <h3 class="font-semibold uppercase text-gray-900 mb-3">Dimensions</h3>
 
           <p class="text-sm text-gray-600">
-            <span v-if="product.length">
-              Length: {{ product.length }}
-            </span>
+            <span v-if="product.length"> Length: {{ product.length }} </span>
 
-            <span
-              v-if="product.length && product.width"
-              class="mx-2"
-            >
-              |
-            </span>
+            <span v-if="product.length && product.width" class="mx-2"> | </span>
 
-            <span v-if="product.width">
-              Width: {{ product.width }}
-            </span>
+            <span v-if="product.width"> Width: {{ product.width }} </span>
 
             <span> cm</span>
           </p>
@@ -117,13 +105,8 @@ watch(productId, load)
         </p>
 
         <!-- Ring Size -->
-        <div
-          v-if="isRing"
-          class="mt-6 sm:mt-8"
-        >
-          <label class="block text-sm font-semibold mb-2">
-            Size
-          </label>
+        <div v-if="isRing" class="mt-6 sm:mt-8">
+          <label class="block text-sm font-semibold mb-2"> Size </label>
 
           <SizeSelect v-model="selectedSize" :options="sizes" />
         </div>
